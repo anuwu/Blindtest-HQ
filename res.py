@@ -1,12 +1,18 @@
 import sys
 import os
+import numpy as np
 import pandas as pd
-import urllib
+import urllib.request as req
+
+tot = 0
+doubs = 0
 
 def batchRes (incsv, outcsv) :
     """ For an input, output csv file pair, downloads the images
     of the galaxies classified as double in any band except the
     z-band """
+
+    global tot, doubs
 
     gal = pd.read_csv(incsv, usecols=['objid', 'ra', 'dec'], dtype=object)
     res = pd.read_csv(outcsv, usecols=['objid', 'u-type', 'u-peaks',
@@ -16,14 +22,38 @@ def batchRes (incsv, outcsv) :
                                                 'z-type', 'z-peaks']
                             , dtype=object)
 
-    print (gal)
-    print (res)
+    double_ids = res['objid'][
+        (res['u-type'] == "DOUBLE") |
+        (res['g-type'] == "DOUBLE") |
+        (res['r-type'] == "DOUBLE") |
+        (res['i-type'] == "DOUBLE")
+    ]
 
+    tot += len(res)
+    doubs += len(double_ids)
+
+    for objid in double_ids :
+        row = gal.loc[gal['objid'] == objid]
+        ra = str(list(row['ra'])[0])
+        dec = str(list(row['dec'])[0])
+        link = "http://skyserver.sdss.org/dr16/SkyServerWS/ImgCutout/getjpeg?ra={}&dec={}&width=128&height=128".\
+                format(ra, dec)
+        # print (ra, dec)
+        try :
+            req.urlretrieve(link, os.path.join("DOUBLES", "SDSS_Cutouts", "{}.jpeg".format(str(objid))))
+        except :
+            tot -= 1
+            doubs -= 1
+            pass
 
 
 def main (flist) :
+    global tot, doubs
 
-    print (flist)
+    if not flist :
+        return
+
+    tot, doubs = 0, 0
     for f in flist :
         i = 1
 
@@ -35,8 +65,8 @@ def main (flist) :
 
             # print (fn)
             i += 1
-            break
-        break
+
+    print ("Doubles/Total = {}/{}".format(doubs, tot))
 
 
 if __name__ == '__main__':
