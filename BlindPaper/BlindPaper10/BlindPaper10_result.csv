@@ -1,4 +1,4 @@
-objID,u-type,u-peaks,g-type,g-peaks,r-type,r-peaks,i-type,i-peaks,z-type,z-peaks
+objid,u-type,u-peaks,g-type,g-peaks,r-type,r-peaks,i-type,i-peaks,z-type,z-peaks
 1237645943979508113,NO_PEAK,"[]",NO_PEAK,"[]",NO_PEAK,"[]",SINGLE,"[(25, 25)]",DOUBLE,"[(51, 49)(24, 25)]"
 1237657069548667045,NO_PEAK,"[]",NO_PEAK,"[]",NO_PEAK,"[]",NO_PEAK,"[]",NO_PEAK,"[]"
 1237657069549322265,NO_PEAK,"[]",NO_PEAK,"[]",SINGLE,"[(47, 12)]",SINGLE,"[(47, 16)]",NO_PEAK,"[]"
