@@ -5,8 +5,6 @@ import numpy as np
 import pandas as pd
 
 
-file = "Doubles1_result.csv"
-
 tolNeighs = lambda pt, t : [(pt[0]+dx, pt[1]+dy)
 						for dx in range(-t, t+1) for dy in range(-t, t+1)
 						if dx or dy]
@@ -36,8 +34,8 @@ def parse_peaks (peakstr, nums) :
 	return plist
 
 
-def main () :
-	doub_pd = pd.read_csv(file, usecols=['objid', 
+def parse_result (fname) :
+	doub_pd = pd.read_csv(fname, usecols=['objid', 
 		'u-type', 'u-peaks',
 		'g-type', 'g-peaks',
 		'r-type', 'r-peaks',
@@ -93,11 +91,13 @@ def main () :
 						purity = False
 						break
 
-
 		if purity :
 			pure.append(objid)
 		else :
 			impure.append(objid)
+
+
+	return pure, impure, errors
 
 	print("Pure sampes = {}".format(len(pure)))
 	print("Impure samples = {}".format(len(impure))) 
@@ -105,4 +105,9 @@ def main () :
 
 
 if __name__ == '__main__':
-	main()
+	for file in sys.argv[1:] :
+		pure, impure, errors = parse_result (file)
+		print("Results for {}".format(file))
+		print("\tPure samples --> {}".format(len(pure)))
+		print("\tImpure samples --> {}".format(len(impure)))
+		print("\tErroneous samples --> {}".format(len(errors)))
