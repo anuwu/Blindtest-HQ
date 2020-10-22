@@ -1,3 +1,7 @@
 __pycache__
+Doubles/__pycache__
 Doubles/SDSS_Cutouts
 Doubles/No_Stars
+Doubles/FITS
+Doubles/*.log
+Doubles/*.csv
