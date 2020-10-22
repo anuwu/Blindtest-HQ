@@ -11,7 +11,7 @@ from astropy.wcs.utils import pixel_to_skycoord
 
 # Relative path to the DAGN-Blindtest source files
 sys.path.append(str(os.path.abspath(
-	os.path.join(os.getcwd(), "../../Source/DAGN-Blindtest")
+	os.path.join(os.getcwd(), "../../DAGN-Blindtest")
 	)))
 
 import sdss_scrape as scrap
