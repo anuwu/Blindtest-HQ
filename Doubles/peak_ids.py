@@ -169,5 +169,6 @@ def parse_result (coodcsv, rescsv) :
 
 
 if __name__ == '__main__':
+	print("objid,pid1,pid2")
 	for file in sys.argv[1:] :
 		parse_result(os.path.join(file, file+".csv"), os.path.join(file, file+"_result.csv"))
