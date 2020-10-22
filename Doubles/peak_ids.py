@@ -165,7 +165,6 @@ def parse_result (coodcsv, rescsv) :
 			o1, o2 = '', ''
 		
 		print("{},{},{}".format(objid, o1, o2))
-		return
 
 
 if __name__ == '__main__':
