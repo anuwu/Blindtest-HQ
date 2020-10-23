@@ -1,8 +1,7 @@
 __pycache__
 Doubles/__pycache__
 Doubles/*.log
-Doubles/*.png
-Doubles/.ipynb_checkpoints
+Doubles/Data/.ipynb_checkpoints
 Doubles/FITS
 
 # The following are ignores from my Ubuntu system. Do not delete in
