@@ -1,11 +1,16 @@
 import sys
 import os
+import logging
 import numpy as np
 import pandas as pd
+import multiprocessing as mp
 from importlib import reload
 
 import peak_helper as ph
 ph = reload(ph)
+
+log = logging.getLogger(__name__)
+log.setLevel(logging.INFO)
 
 # Relative path to the DAGN-Blindtest source files
 
@@ -35,14 +40,8 @@ def process_result (coodcsv, rescsv, pidsfile, resume) :
 		'i-type', 'i-peaks',
 		'z-type', 'z-peaks']
 	, dtype=object)
-
-
-	if not os.path.exists(pidsfile) :
-		outfile = open(pidsfile, "w")
-		outfile.write("objid,bands,pid1,pid2\n")
-	else :
-		outfile = open(pidsfile, "a")
 		
+	procs = []
 	resume = 0 if resume is None else resume
 	for i in range(resume, len(doub_pd['objid'])) :
 		objid = doub_pd.loc[i, 'objid']
@@ -53,23 +52,35 @@ def process_result (coodcsv, rescsv, pidsfile, resume) :
 		bands = input("Enter the band : ")
 		if not bands :
 			bands, o1, o2 = '', '', ''
+			log.info("{},{},{},{}".format(objid, bands, o1, o2))
 		elif bands == "stop" :
-			print("Stopped")
-			outfile.close()
+			if procs != [] :
+				print("Waiting for results to get logged...")
+				for i, p in enumerate(procs) :
+					p.join()
+					print("{} --> Logged".format(i+1))
+
+			print("Stopped!")
 			exit()
 		else :
-			print("Processing...")
-			nums = ph.parse_type(doub_pd.loc[i, bands[0]+"-type"])
-			plist = ph.parse_peaks(doub_pd.loc[i, bands[0]+"-peaks"], nums)
-			o1, o2 = ph.double_peak_ids(objid,
-							(cood_pd.loc[i, 'ra'], cood_pd.loc[i, 'dec']),
-							bands[0],
-							plist)
+			print("Fired process!")
+			def csv_writer (objid, cood, bands, typestr, peakstr) :
+				nums = ph.parse_type(typestr)
+				plist = ph.parse_peaks(peakstr, nums)
+				o1, o2 = ph.double_peak_ids(objid, cood, bands[0], plist)
+				log.info("{},{},{},{}".format(objid, bands, o1, o2))
 
-		outfile.write("{},{},{},{}\n".format(objid, bands, o1, o2))
+			proc = mp.Process(target=csv_writer, args=(objid,
+											(cood_pd.loc[i, 'ra'], cood_pd.loc[i, 'dec']),
+											bands,
+											doub_pd.loc[i, bands[0]+"-type"],
+											doub_pd.loc[i, bands[0]+"-peaks"],
+											)
+			)
+			procs.append(proc)
+			proc.start()
+		
 		print(35*"-")
-
-	outfile.close()
 
 if __name__ == '__main__':
 	if not os.path.isdir("FITS") :
@@ -77,9 +88,21 @@ if __name__ == '__main__':
 
 	file = sys.argv[1]
 	pth = os.path.join("Batches", file)
+
 	pidsfile = os.path.join(pth, file+"_pids.csv") 
+	if not os.path.exists(pidsfile) :
+		fileHandler = logging.FileHandler(pidsfile, mode='w')
+		for h in log.handlers :
+			log.removeHandler(h)
+		log.addHandler(fileHandler)
+		log.info("objid,bands,pid1,pid2")
+	else :
+		fileHandler = logging.FileHandler(pidsfile, mode='a')
+		for h in log.handlers :
+			log.removeHandler(h)
+		log.addHandler(fileHandler)
+
 	resume = get_resume(pidsfile)
-	
 	process_result(os.path.join(pth, file+".csv"), 
 				os.path.join(pth, file+"_result.csv"),
 				pidsfile,
