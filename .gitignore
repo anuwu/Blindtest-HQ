@@ -4,3 +4,8 @@ Doubles/*.log
 Doubles/*.png
 Doubles/.ipynb_checkpoints
 Doubles/FITS
+
+# The following are ignores from my Ubuntu system. Do not delete in
+# future edits of the .gitignore file
+Doubles/SDSS_Cutouts
+Doubles/No_Stars
