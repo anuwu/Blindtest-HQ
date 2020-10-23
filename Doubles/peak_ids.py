@@ -78,6 +78,12 @@ def peak_to_objid (objid, cood, fitsPath, plist) :
 
 
 def parse_result (coodcsv, rescsv) :
+	"""
+	Parses a batch of results -
+	coodcsv		- csv file containing objid, ra, dec
+	rescsv		- csv file containing relative pixel coordinates of the peaks in each band
+	"""
+
 	cood_pd = pd.read_csv(coodcsv, usecols=['objid', 'ra', 'dec'], dtype=object)
 	doub_pd = pd.read_csv(rescsv, usecols=['objid', 
 		'u-type', 'u-peaks',
