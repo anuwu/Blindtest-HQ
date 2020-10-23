@@ -83,8 +83,7 @@ def parse_result (coodcsv, rescsv) :
 		'u-type', 'u-peaks',
 		'g-type', 'g-peaks',
 		'r-type', 'r-peaks',
-		'i-type', 'i-peaks',
-		'z-type', 'z-peaks']
+		'i-type', 'i-peaks']
 	, dtype=object)
 	
 	gres = {}
@@ -94,14 +93,13 @@ def parse_result (coodcsv, rescsv) :
 			gres[objid] = {'u-n' : 0, 'u-p' : [],
 			'g-n' : 0, 'g-p' : [],
 			'r-n' : 0, 'r-p' : [],
-			'i-n' : 0, 'i-p' : [],
-			'z-n' : 0, 'z-p' : []
+			'i-n' : 0, 'i-p' : []
 			}
-			print("{},,".format(objid))
+			print("{},,,".format(objid))
 			continue
 
 		gres[objid] = {}
-		for b in "ugriz" :
+		for b in "ugri" :
 			b_type = b + "-type"
 			b_peaks = b + "-peaks"
 			tp = doub_pd.loc[i, b_type]
@@ -110,8 +108,10 @@ def parse_result (coodcsv, rescsv) :
 
 		proc_peaks = []
 		purity = True
+		doub = False
 		for b in "ugri" :
 			if gres[objid][b+"-n"] == 2 :
+				doub = True
 				if not proc_peaks :
 					proc_peaks = [gres[objid][b+"-p"]]
 				else :
@@ -134,8 +134,11 @@ def parse_result (coodcsv, rescsv) :
 						purity = False
 						break
 
+		obs_bands = ''
+		for b in [b for b in "ugri" if gres[objid][b+"-n"] == 2] :
+			obs_bands += b
 
-		if purity :
+		if doub and purity :
 			bns = np.array([
 				gres[objid][b+"-n"] for b in "ugri"
 			])
@@ -164,10 +167,10 @@ def parse_result (coodcsv, rescsv) :
 		else :
 			o1, o2 = '', ''
 		
-		print("{},{},{}".format(objid, o1, o2))
+		print("{},{},{},{}".format(objid, obs_bands, o1, o2))
 
 
 if __name__ == '__main__':
-	print("objid,pid1,pid2")
+	print("objid,bands,pid1,pid2")
 	for file in sys.argv[1:] :
 		parse_result(os.path.join(file, file+".csv"), os.path.join(file, file+"_result.csv"))
