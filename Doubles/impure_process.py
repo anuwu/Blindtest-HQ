@@ -12,18 +12,26 @@ ph = reload(ph)
 log = logging.getLogger(__name__)
 log.setLevel(logging.INFO)
 
-# Relative path to the DAGN-Blindtest source files
 
-def get_resume (pidsfile) :
+def get_procd_ids (pidsfile) :
 	""" Reads the result csv file (if it exists)
 	and determines the index where the processing would resume """
 
-	return 0 if not os.path.exists(pidsfile) \
-	else len(
-		pd.read_csv(pidsfile, usecols=['objid', 'pid1', 'pid2'], dtype=object)
-	)
+	return [] if not os.path.exists(pidsfile) \
+	else list(pd.read_csv(pidsfile, usecols=['objid', 'pid1', 'pid2'], dtype=object)['objid'])
 
-def process_result (coodcsv, rescsv, pidsfile, resume) :
+def procs_fin (procs) :
+	""" Waits for processes to finish """
+
+	if procs != [] :
+		print("Waiting for results to get logged...")
+		for i, p in enumerate(procs) :
+			p.join()
+			print("{} --> Logged".format(i+1))
+
+	print("Stopped!")
+
+def process_result (coodcsv, rescsv, pidsfile, procd_ids) :
 	"""
 	Parses a batch of results -
 	coodcsv		- csv file containing objid, ra, dec
@@ -42,11 +50,21 @@ def process_result (coodcsv, rescsv, pidsfile, resume) :
 	, dtype=object)
 		
 	procs = []
-	resume = 0 if resume is None else resume
-	for i in range(resume, len(doub_pd['objid'])) :
-		objid = doub_pd.loc[i, 'objid']
-		line = str(doub_pd.loc[i])
-		print("Object number --> {}".format(i))
+	doub_ids = [i for i,objid 
+			in enumerate(list(doub_pd['objid']))
+			if objid not in procd_ids
+	]
+
+	cood_ids = [i for i, objid 
+			in enumerate(list(cood_pd['objid']))
+			if objid not in procd_ids
+	]
+		
+	l = len(cood_ids)
+	for j, (i1, i2) in enumerate(zip(cood_ids, doub_ids)) :
+		objid = doub_pd.loc[i2, 'objid']
+		line = str(doub_pd.loc[i2])
+		print("Object {} of {}".format(j+1, l))
 		print(line[:line.rfind('\n')])
 
 		bands = input("Enter the band : ")
@@ -54,13 +72,7 @@ def process_result (coodcsv, rescsv, pidsfile, resume) :
 			bands, o1, o2 = '', '', ''
 			log.info("{},{},{},{}".format(objid, bands, o1, o2))
 		elif bands == "stop" :
-			if procs != [] :
-				print("Waiting for results to get logged...")
-				for i, p in enumerate(procs) :
-					p.join()
-					print("{} --> Logged".format(i+1))
-
-			print("Stopped!")
+			procs_fin(procs)
 			exit()
 		else :
 			print("Fired process!")
@@ -71,16 +83,18 @@ def process_result (coodcsv, rescsv, pidsfile, resume) :
 				log.info("{},{},{},{}".format(objid, bands, o1, o2))
 
 			proc = mp.Process(target=csv_writer, args=(objid,
-											(cood_pd.loc[i, 'ra'], cood_pd.loc[i, 'dec']),
+											(cood_pd.loc[i1, 'ra'], cood_pd.loc[i2, 'dec']),
 											bands,
-											doub_pd.loc[i, bands[0]+"-type"],
-											doub_pd.loc[i, bands[0]+"-peaks"],
+											doub_pd.loc[i2, bands[0]+"-type"],
+											doub_pd.loc[i2, bands[0]+"-peaks"],
 											)
 			)
 			procs.append(proc)
 			proc.start()
 		
 		print(35*"-")
+
+	procs_fin(procs)
 
 if __name__ == '__main__':
 	if not os.path.isdir("FITS") :
@@ -102,8 +116,8 @@ if __name__ == '__main__':
 			log.removeHandler(h)
 		log.addHandler(fileHandler)
 
-	resume = get_resume(pidsfile)
+	procd_ids = get_procd_ids(pidsfile)
 	process_result(os.path.join(pth, file+".csv"), 
 				os.path.join(pth, file+"_result.csv"),
 				pidsfile,
-				resume)
+				procd_ids)
