@@ -76,6 +76,34 @@ def peak_to_objid (objid, cood, fitsPath, plist) :
 	return cood_to_objid(cood1), cood_to_objid(cood2)
 	# return [(cood1.ra.deg, cood1.dec.deg), (cood2.ra.deg, cood2.dec.deg)]
 
+def double_peak_ids (objid, cood, band, plist) :
+	"""
+	Returns the object ids corresponding to
+	the double peaks in a band -
+	objid 		- objid of double detection
+	cood 		- coordinate of the object
+	band  		- one of 'ugriz'
+	plist 		- peak list [(p1x, p1y), (p2x, p1y)]
+	"""
+
+	fits_fold = os.path.join(os.getcwd(), "FITS")
+	fits_path = os.path.join(fits_fold, objid + "-{}.fits".format(band))
+
+	if not os.path.exists(fits_path) :
+		repoLink = scrap.scrapeRepoLink(objid)
+		dlinks = scrap.scrapeBandLinks(repoLink)
+		scrap.downloadExtract(objid, 
+							band, 
+							dlinks[band], 
+							fits_fold, 
+							fits_path)
+
+	os.remove(fits_path)
+	return peak_to_objid(objid, 
+						cood,
+						fits_path, 
+						gres[objid][band + "-p"])
+	
 
 def parse_result (coodcsv, rescsv) :
 	"""
@@ -151,25 +179,11 @@ def parse_result (coodcsv, rescsv) :
 			band = "ugri"[
 				np.argmin(np.where(bns == 2, range(-4,0), range(4)))
 			]
-			
-			fits_fold = os.path.join(os.getcwd(), "FITS")
-			fits_path = os.path.join(fits_fold, objid + "-{}.fits".format(band))
 
-			if not os.path.exists(fits_path) :
-				repoLink = scrap.scrapeRepoLink(objid)
-				dlinks = scrap.scrapeBandLinks(repoLink)
-				scrap.downloadExtract(objid, 
+			o1, o2 = double_peak_ids(objid,
+									(cood_pd.loc[i, 'ra'], cood_pd.loc[i, 'dec']),
 									band, 
-									dlinks[band], 
-									os.path.join(os.getcwd(), "FITS"), 
-									fits_path)
-
-	
-			o1, o2 = peak_to_objid(objid, 
-							(cood_pd.loc[i, 'ra'], cood_pd.loc[i, 'dec']),
-							fits_path, 
-							gres[objid][band + "-p"])
-			os.remove(fits_path)
+									gres[objid][band + "-p"])
 		else :
 			o1, o2 = '', ''
 		
