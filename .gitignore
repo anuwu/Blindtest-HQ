@@ -1,10 +1,11 @@
 __pycache__
-Doubles/__pycache__
-Doubles/*.log
-Doubles/Data/.ipynb_checkpoints
-Doubles/FITS
+SDSS-Stripe-82/Doubles/__pycache__
+
+SDSS-Stripe-82/Doubles/*.log
+SDSS-Stripe-82/Doubles/Data/.ipynb_checkpoints
+SDSS-Stripe-82/Doubles/FITS
 
 # The following are ignores from my Ubuntu system. Do not delete in
 # future edits of the .gitignore file
-Doubles/SDSS_Cutouts
-Doubles/No_Stars
+SDSS-Stripe-82/Doubles/SDSS_Cutouts
+SDSS-Stripe-82/Doubles/No_Stars
