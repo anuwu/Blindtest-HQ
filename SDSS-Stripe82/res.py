@@ -7,6 +7,10 @@ import urllib.request as req
 tot = 0
 doubs = 0
 
+def download_cutout (ra, dec, path) :
+	link = "http://skyserver.sdss.org/dr16/SkyServerWS/ImgCutout/getjpeg?ra={}&dec={}&width=128&height=128".format(ra, dec)
+	req.urlretrieve(link, path)
+
 def batchRes (incsv, outcsv) :
     """ For an input, output csv file pair, downloads the images
     of the galaxies classified as double in any band except the
@@ -36,11 +40,8 @@ def batchRes (incsv, outcsv) :
         row = gal.loc[gal['objid'] == objid]
         ra = str(list(row['ra'])[0])
         dec = str(list(row['dec'])[0])
-        link = "http://skyserver.sdss.org/dr16/SkyServerWS/ImgCutout/getjpeg?ra={}&dec={}&width=128&height=128".\
-                format(ra, dec)
-        # print (ra, dec)
         try :
-            req.urlretrieve(link, os.path.join("DOUBLES", "SDSS_Cutouts", "{}.jpeg".format(str(objid))))
+            download_cutout(ra, dec, os.path.join("DOUBLES", "SDSS_Cutouts", "{}.jpeg".format(str(objid))))
         except :
             tot -= 1
             doubs -= 1

@@ -1,0 +1,1 @@
+select top 1000 objID INTO MyDB.blind FROM photoObjAll where ra >= -60 AND ra <= 60 AND dec >= -1.26 AND dec <= 1.26 AND type = 3 order by newid()
