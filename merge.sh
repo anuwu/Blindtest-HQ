@@ -1,4 +1,5 @@
 #!/bin/bash
+# Add drop.sh, drop.sh, length.sh to /usr/local/bin and remove the .sh extension for this script to work
 
 for var in "$@"
 do
