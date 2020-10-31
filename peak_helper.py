@@ -6,9 +6,9 @@ import bs4
 from importlib import reload
 from astropy.wcs.utils import pixel_to_skycoord
 
-sys.path.append(str(os.path.abspath(
-	os.path.join(os.getcwd(), "../../DAGN-Blindtest")
-	)))
+sys.path.append(os.path.abspath(
+	os.path.join(os.getcwd(), "../DAGN-Blindtest")
+))
 
 import sdss_scrape as scrap
 import fits_proc as fp
@@ -75,7 +75,7 @@ def double_peak_ids (objid, cood, band, plist) :
 	the double peaks in a band -
 	objid 		- objid of double detection
 	cood 		- coordinate of the object
-	band  		- one of 'ugriz'
+	band  		- one of 'ugri'
 	plist 		- peak list [(p1x, p1y), (p2x, p1y)]
 	"""
 

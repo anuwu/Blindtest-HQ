@@ -4,19 +4,18 @@ import numpy as np
 import pandas as pd
 import urllib.request as req
 
-tot = 0
-doubs = 0
+cutout_dir = "Cutouts"
 
 def download_cutout (ra, dec, path) :
+	""" Uses the SDSS cutout service to download the object centred at (ra, dec) to 'path' """
+
 	link = "http://skyserver.sdss.org/dr16/SkyServerWS/ImgCutout/getjpeg?ra={}&dec={}&width=128&height=128".format(ra, dec)
 	req.urlretrieve(link, path)
 
 def batchRes (incsv, outcsv) :
     """ For an input, output csv file pair, downloads the images
-    of the galaxies classified as double in any band except the
+    of the galaxies classified as le in any band except the
     z-band """
-
-    global tot, doubs
 
     gal = pd.read_csv(incsv, usecols=['objid', 'ra', 'dec'], dtype=object)
     res = pd.read_csv(outcsv, usecols=['objid', 'u-type', 'u-peaks',
@@ -33,42 +32,45 @@ def batchRes (incsv, outcsv) :
         (res['i-type'] == "DOUBLE")
     ]
 
-    tot += len(res)
-    doubs += len(double_ids)
-
-    for objid in double_ids :
+    
+    for i, objid in double_ids.iteritems() :
         row = gal.loc[gal['objid'] == objid]
         ra = str(list(row['ra'])[0])
         dec = str(list(row['dec'])[0])
         try :
-            download_cutout(ra, dec, os.path.join("DOUBLES", "SDSS_Cutouts", "{}.jpeg".format(str(objid))))
+            download_cutout(ra, dec, os.path.join(cutout_dir, "{}.jpeg".format(str(objid))))
+            stat = "success"
         except :
-            tot -= 1
-            doubs -= 1
-            pass
+            stat = "fail"
 
+        args = (objid, ra, dec) + tuple([
+        		res.loc[i]["{}-{}".format(b, col)]
+        		for b in "ugri"
+        		for col in ["type", "peaks"]
+        	]) + (stat, )
 
+        print("{},{},{},{},\"{}\",{},\"{}\",{},\"{}\",{},\"{}\",{}".format(*args))
+
+            
 def main (flist) :
-    global tot, doubs
-
     if not flist :
         return
 
-    tot, doubs = 0, 0
-    for f in flist :
+    if not os.path.isdir(cutout_dir) :
+        os.mkdir(cutout_dir)
+        
+    print("objid,ra,dec,u-type,u-peaks,g-type,g-peaks,r-type,r-peaks,i-type,i-peaks,status")
+    for res_file in flist :
         i = 1
+        resind = res_file.find("_result.csv")
+        dirind = res_file.rfind("/")
+        batch_name = res_file[dirind+1:resind]
+        cood_file = res_file[:resind] + ".csv"
+        # print (batch_name)
+        batchRes (cood_file, res_file)
 
-        while os.path.isdir(os.path.join(f, "{}{}".format(f, i))) :
-            fn = "{}{}".format(f, i)
-            fp = os.path.join(f, "{}{}".format(f, i))
-            print (fn)
-            batchRes (os.path.join(fp, fn + ".csv"), os.path.join(fp, fn + "_result.csv"))
-
-            # print (fn)
-            i += 1
-
-    print ("Doubles/Total = {}/{}".format(doubs, tot))
-
+        # print (fn)
+        i += 1
 
 if __name__ == '__main__':
     main(sys.argv[1:])

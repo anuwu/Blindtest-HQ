@@ -1,3 +1,7 @@
+#!/bin/bash
+# Script to check cumulative completion when '_Complete_Result.csv' suffix
+# was being used to designated processed batches
+
 fname=$1
 dir=$(pwd)
 i="1"

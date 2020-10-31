@@ -1,20 +1,16 @@
+# Temporary workspace files/folders for post-processing
+__pycache__/
+Cutouts/
+FITS/
+Pure.csv
+Impure.csv
+raw_doubles.csv
+*.log
 .ipynb_checkpoints
-Gaia-Stripe82/.ipynb_checkpoints
-SDSS-Stripe82/Doubles/__pycache__
-SDSS-Stripe82/__pycache__
-SDSS-Stripe82/Doubles/Data/.ipynb_checkpoints
-
-SDSS-Stripe82/Doubles/*.log
-SDSS-Stripe82/Doubles/FITS
-SDSS-Stripe82/Doubles/Data/Mou/Cutouts
-
-# The following are ignores from my Ubuntu system. Do not delete in
-# future edits of the .gitignore file
-SDSS-Stripe82/Doubles/SDSS_Cutouts
-SDSS-Stripe82/Doubles/No_Stars
 
 # SDSS Stripe-82
 SDSS-Stripe82/SDSS_Stripe82_All.csv
+SDSS-Stripe82/Doubles/Data/Mou/Cutouts
 
 # Gaia Stripe-82
 Gaia-Stripe82/Gaia_Stripe82_All.csv

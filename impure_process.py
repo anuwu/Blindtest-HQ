@@ -1,3 +1,11 @@
+"""
+Written to work using the raw_doubles.csv file and the Pure.csv file
+but I haven't tested it
+
+Have written functions to check objids that have already been processed
+because multiprocessing is unreliable and some don't finish at all!
+"""
+
 import sys
 import os
 import logging
@@ -31,39 +39,38 @@ def procs_fin (procs) :
 
 	print("Stopped!")
 
-def process_result (coodcsv, rescsv, pidsfile, procd_ids) :
+def process_result (raw_doubles_csv, impure_csv, pidsfile, procd_ids) :
 	"""
 	Parses a batch of results -
-	coodcsv		- csv file containing objid, ra, dec
-	rescsv		- csv file containing relative pixel coordinates of the peaks in each band
-	pidsfile	- Name of the csv file where the results would be written
-	resume 		- index at which processing the result will resume
+	coodcsv			- csv file containing objid, ra, dec
+	rescsv			- csv file containing relative pixel coordinates of the peaks in each band
+	pidsfile		- Name of the csv file where the results would be written
+	procds_ids 		- ids that have already been processed
 	"""
 
-	cood_pd = pd.read_csv(coodcsv, usecols=['objid', 'ra', 'dec'], dtype=object)
-	doub_pd = pd.read_csv(rescsv, usecols=['objid', 
+	impure_pd = pd.read_csv(pure_csv, usecols=['objid', 'bands', 'pid1', 'pid2'], dtype=object)
+	raw_pd = pd.read_csv(rescsv, usecols=['objid', 'ra', 'dec', 
 		'u-type', 'u-peaks',
 		'g-type', 'g-peaks',
 		'r-type', 'r-peaks',
 		'i-type', 'i-peaks',
-		'z-type', 'z-peaks']
+		'status']
 	, dtype=object)
 		
 	procs = []
-	doub_ids = [i for i,objid 
-			in enumerate(list(doub_pd['objid']))
-			if objid not in procd_ids
-	]
-
-	cood_ids = [i for i, objid 
-			in enumerate(list(cood_pd['objid']))
-			if objid not in procd_ids
+	raw_ids = [
+		i for i,objid 
+		in enumerate(list(raw_pd['objid']))
+		if objid not in procd_ids
 	]
 		
-	l = len(cood_ids)
-	for j, (i1, i2) in enumerate(zip(cood_ids, doub_ids)) :
-		objid = doub_pd.loc[i2, 'objid']
-		line = str(doub_pd.loc[i2])
+	l = len(raw_ids)
+	for j, i in enumerate(raw_ids) :
+		if str(list(pure_pd.loc[i]['bands'])[0]) != '' :
+			continue
+
+		objid = raw_pd.loc[i, 'objid']
+		line = str(raw_pd.loc[i])
 		print("Object {} of {}".format(j+1, l))
 		print(line[:line.rfind('\n')])
 
@@ -83,10 +90,10 @@ def process_result (coodcsv, rescsv, pidsfile, procd_ids) :
 				log.info("{},{},{},{}".format(objid, bands, o1, o2))
 
 			proc = mp.Process(target=csv_writer, args=(objid,
-											(cood_pd.loc[i1, 'ra'], cood_pd.loc[i2, 'dec']),
+											(cood_pd.loc[i, 'ra'], cood_pd.loc[i, 'dec']),
 											bands,
-											doub_pd.loc[i2, bands[0]+"-type"],
-											doub_pd.loc[i2, bands[0]+"-peaks"],
+											raw_pd.loc[i, bands[0]+"-type"],
+											raw_pd.loc[i, bands[0]+"-peaks"],
 											)
 			)
 			procs.append(proc)
@@ -100,10 +107,10 @@ if __name__ == '__main__':
 	if not os.path.isdir("FITS") :
 		os.mkdir("FITS")
 
-	file = sys.argv[1]
-	pth = os.path.join("Batches", file)
+	impure_csv = sys.argv[1]
+	raw_doubles_csv = sys.argv[2]
 
-	pidsfile = os.path.join(pth, file+"_pids.csv") 
+	pidsfile = "Impure_pids.csv" 
 	if not os.path.exists(pidsfile) :
 		fileHandler = logging.FileHandler(pidsfile, mode='w')
 		for h in log.handlers :
@@ -117,7 +124,7 @@ if __name__ == '__main__':
 		log.addHandler(fileHandler)
 
 	procd_ids = get_procd_ids(pidsfile)
-	process_result(os.path.join(pth, file+".csv"), 
-				os.path.join(pth, file+"_result.csv"),
+	process_result(raw_doubles_csv,
+				pure_csv,
 				pidsfile,
 				procd_ids)

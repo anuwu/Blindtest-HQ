@@ -1,3 +1,7 @@
+"""
+Takes in the raw double file and outputs a file of pure galaxies
+"""
+
 import sys
 import os
 import numpy as np
@@ -7,49 +11,58 @@ from importlib import reload
 import peak_helper as ph
 ph = reload(ph)
 
-# Relative path to the DAGN-Blindtest source files
+fits_dir = "FITS"
 
-def process_result (coodcsv, rescsv) :
+def process_result (raw_doubles_csv) :
 	"""
 	Parses a batch of results -
-	coodcsv		- csv file containing objid, ra, dec
 	rescsv		- csv file containing relative pixel coordinates of the peaks in each band
 	"""
 
-	cood_pd = pd.read_csv(coodcsv, usecols=['objid', 'ra', 'dec'], dtype=object)
-	doub_pd = pd.read_csv(rescsv, usecols=['objid', 
+	raw_pd = pd.read_csv(raw_doubles_csv, usecols=['objid', 'ra', 'dec',
 		'u-type', 'u-peaks',
 		'g-type', 'g-peaks',
 		'r-type', 'r-peaks',
-		'i-type', 'i-peaks']
+		'i-type', 'i-peaks',
+		'status']
 	, dtype=object)
-	
+
+	pure_file = open("Pure_pids.csv", "w")
+	impure_file = open("Impure.csv", "w")
+	pure_file.write("objid,bands,pid1,pid2")
+	impure_file.write("objid,ra,dec")
+
 	gres = {}
-	for i in range(len(doub_pd['objid'])) :
-		objid = doub_pd.loc[i, 'objid'] 
-		if doub_pd.loc[i, 'u-type'] == "ERROR" :
+	for i in range(len(raw_pd['objid'])) :
+		objid = (raw_pd.loc[i, 'objid'], 
+						raw_pd.loc[i, 'ra'], 
+						raw_pd.loc[i, 'dec']
+						)
+		if raw_pd.loc[i, 'u-type'] == "ERROR" :
 			gres[objid] = {'u-n' : 0, 'u-p' : [],
 			'g-n' : 0, 'g-p' : [],
 			'r-n' : 0, 'r-p' : [],
 			'i-n' : 0, 'i-p' : []
 			}
 			print("{},,,".format(objid))
+			impure_file.write("{},{},{}".format(objid, ra, dec))
 			continue
 
 		gres[objid] = {}
 		for b in "ugri" :
 			b_type = b + "-type"
 			b_peaks = b + "-peaks"
-			tp = doub_pd.loc[i, b_type]
-			gres[objid][b+"-n"] = ph.parse_type(doub_pd.loc[i, b_type])
-			gres[objid][b+"-p"] = ph.parse_peaks(doub_pd.loc[i, b_peaks], gres[objid][b+"-n"])
+			tp = raw_pd.loc[i, b_type]
+			gres[objid][b+"-n"] = ph.parse_type(raw_pd.loc[i, b_type])
+			gres[objid][b+"-p"] = ph.parse_peaks(raw_pd.loc[i, b_peaks], gres[objid][b+"-n"])
 
 		proc_peaks = []
 		purity = True
-		doub = False
+		doub, doub_band = False, None
 		for b in "ugri" :
 			if gres[objid][b+"-n"] == 2 :
 				doub = True
+				doub_band = b
 				if not proc_peaks :
 					proc_peaks = [gres[objid][b+"-p"]]
 				else :
@@ -77,28 +90,24 @@ def process_result (coodcsv, rescsv) :
 			obs_bands += b
 
 		if doub and purity :
-			bns = np.array([
-				gres[objid][b+"-n"] for b in "ugri"
-			])
-			band = "ugri"[
-				np.argmin(np.where(bns == 2, range(-4,0), range(4)))
-			]
-
 			o1, o2 = ph.double_peak_ids(objid,
-									(cood_pd.loc[i, 'ra'], cood_pd.loc[i, 'dec']),
-									band, 
-									gres[objid][band + "-p"])
+									(raw_pd.loc[i, 'ra'], raw_pd.loc[i, 'dec']),
+									doub_band, 
+									gres[objid][doub_band + "-p"])
+			pure_file.write("{},{},{},{}".format(objid, obs_bands, o1, o2))
 		else :
 			o1, o2 = '', ''
+			impure_file.write("{},{},{}".format(objid, ra, dec))
 		
 		print("{},{},{},{}".format(objid, obs_bands, o1, o2))
 
+	pure_file.close()
+	impure_file.close()
+
 
 if __name__ == '__main__':
-	if not os.path.isdir("FITS") :
-		os.mkdir("FITS")
+	if not os.path.isdir(fits_dir) :
+		os.mkdir(fits_dir)
 
 	print("objid,bands,pid1,pid2")
-	for file in sys.argv[1:] :
-		pth = os.path.join("Batches", file)
-		process_result(os.path.join(pth, file+".csv"), os.path.join(pth, file+"_result.csv"))
+	process_result(sys.argv[1])
