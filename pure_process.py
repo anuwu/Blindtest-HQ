@@ -34,8 +34,8 @@ def process_result (raw_doubles_csv) :
 
 	gres = {}
 	for i in range(len(raw_pd['objid'])) :
-		objid = (raw_pd.loc[i, 'objid'], 
-						raw_pd.loc[i, 'ra'], 
+		objid = (raw_pd.loc[i, 'objid'],
+						raw_pd.loc[i, 'ra'],
 						raw_pd.loc[i, 'dec']
 						)
 		if raw_pd.loc[i, 'u-type'] == "ERROR" :
@@ -92,13 +92,13 @@ def process_result (raw_doubles_csv) :
 		if doub and purity :
 			o1, o2 = ph.double_peak_ids(objid,
 									(raw_pd.loc[i, 'ra'], raw_pd.loc[i, 'dec']),
-									doub_band, 
+									doub_band,
 									gres[objid][doub_band + "-p"])
 			pure_file.write("{},{},{},{}".format(objid, obs_bands, o1, o2))
 		else :
 			o1, o2 = '', ''
 			impure_file.write("{},{},{}".format(objid, ra, dec))
-		
+
 		print("{},{},{},{}".format(objid, obs_bands, o1, o2))
 
 	pure_file.cpose()

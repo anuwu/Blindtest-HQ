@@ -1,5 +1,5 @@
 """
-Takes in a list of <batch>_result.csv files and 
+Takes in a list of <batch>_result.csv files and
 downloads their cutouts
 """
 
@@ -19,15 +19,13 @@ def download_cutout (ra, dec, path) :
 
 def batchRes (incsv, outcsv) :
     """ For an input, output csv file pair, downloads the images
-    of the galaxies classified as le in any band except the
-    z-band """
+    of the galaxies classified as le in any band """
 
     gal = pd.read_csv(incsv, usecols=['objid', 'ra', 'dec'], dtype=object)
     res = pd.read_csv(outcsv, usecols=['objid', 'u-type', 'u-peaks',
                                                 'g-type', 'g-peaks',
                                                 'r-type', 'r-peaks',
-                                                'i-type', 'i-peaks',
-                                                'z-type', 'z-peaks']
+                                                'i-type', 'i-peaks']
                             , dtype=object)
 
     double_ids = res['objid'][
@@ -37,7 +35,7 @@ def batchRes (incsv, outcsv) :
         (res['i-type'] == "DOUBLE")
     ]
 
-    
+
     for i, objid in double_ids.iteritems() :
         row = gal.loc[gal['objid'] == objid]
         ra = str(list(row['ra'])[0])
@@ -56,14 +54,14 @@ def batchRes (incsv, outcsv) :
 
         print("{},{},{},{},\"{}\",{},\"{}\",{},\"{}\",{},\"{}\",{}".format(*args))
 
-            
+
 def main (flist) :
     if not flist :
         return
 
     if not os.path.isdir(cutout_dir) :
         os.mkdir(cutout_dir)
-        
+
     print("objid,ra,dec,u-type,u-peaks,g-type,g-peaks,r-type,r-peaks,i-type,i-peaks,status")
     for res_file in flist :
         i = 1
