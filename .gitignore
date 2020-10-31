@@ -1,12 +1,13 @@
-Gaia-Stripe-82/.ipynb_checkpoints
-SDSS-Stripe-82/Doubles/__pycache__
-SDSS-Stripe-82/__pycache__
+Gaia-Stripe82/.ipynb_checkpoints
+SDSS-Stripe82/Doubles/__pycache__
+SDSS-Stripe82/__pycache__
+SDSS-Stripe82/Doubles/Data/.ipynb_checkpoints
 
-SDSS-Stripe-82/Doubles/*.log
-SDSS-Stripe-82/Doubles/Data/.ipynb_checkpoints
-SDSS-Stripe-82/Doubles/FITS
+SDSS-Stripe82/Doubles/*.log
+SDSS-Stripe82/Doubles/FITS
+SDSS-Stripe82/Doubles/Data/Mou/Cutouts
 
 # The following are ignores from my Ubuntu system. Do not delete in
 # future edits of the .gitignore file
-SDSS-Stripe-82/Doubles/SDSS_Cutouts
-SDSS-Stripe-82/Doubles/No_Stars
+SDSS-Stripe82/Doubles/SDSS_Cutouts
+SDSS-Stripe82/Doubles/No_Stars
