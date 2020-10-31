@@ -1,3 +1,4 @@
+.ipynb_checkpoints
 Gaia-Stripe82/.ipynb_checkpoints
 SDSS-Stripe82/Doubles/__pycache__
 SDSS-Stripe82/__pycache__
@@ -12,7 +13,12 @@ SDSS-Stripe82/Doubles/Data/Mou/Cutouts
 SDSS-Stripe82/Doubles/SDSS_Cutouts
 SDSS-Stripe82/Doubles/No_Stars
 
-# Very large csv files
-Stripe82_SDSSxGaia_Cleared_cood.csv
-Stripe82_SDSSxGaia_Cleared_objid.csv
+# SDSS Stripe-82
 SDSS-Stripe82/SDSS_Stripe82_All.csv
+
+# Gaia Stripe-82
+Gaia-Stripe82/Gaia_Stripe82_All.csv
+
+# Gaia-SDSS crossmatch filtration output
+SDSSxGaia/*
+!SDSSxGaia/SDSSxGaia_match_counts.png
