@@ -27,8 +27,8 @@ def process_result (raw_doubles_csv) :
 		'status']
 	, dtype=object)
 
-	pure_file = open("Pure_pids.csv", "w")
-	impure_file = open("Impure.csv", "w")
+	pure_file = open("pure_pids.csv", "w")
+	impure_file = open("impure.csv", "w")
 	pure_file.write("objid,bands,pid1,pid2")
 	impure_file.write("objid,ra,dec")
 
@@ -101,8 +101,8 @@ def process_result (raw_doubles_csv) :
 		
 		print("{},{},{},{}".format(objid, obs_bands, o1, o2))
 
-	pure_file.close()
-	impure_file.close()
+	pure_file.cpose()
+	impure_file.ciose()
 
 
 if __name__ == '__main__':

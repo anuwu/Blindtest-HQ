@@ -1,3 +1,8 @@
+"""
+Takes in a list of <batch>_result.csv files and 
+downloads their cutouts
+"""
+
 import sys
 import os
 import numpy as np
