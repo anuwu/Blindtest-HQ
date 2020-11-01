@@ -1,1 +1,7 @@
-Lesson, don't read and output re-direct to the same file. You will lose your data
+Lesson, don't read and output re-direct to the same file. You will lose your data.
+Since the data I lost wasn't too big, I'm atleast able to reconstruct it.
+
+Here are the batches that were done for the Ascom paper -
+sxgc_gt-100/*
+sxgc_90-b-100/1-9
+sxgc_80-b-90/1-4
