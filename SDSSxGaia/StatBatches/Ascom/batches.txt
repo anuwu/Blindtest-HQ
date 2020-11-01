@@ -1,0 +1,1 @@
+Lesson, don't read and output re-direct to the same file. You will lose your data
