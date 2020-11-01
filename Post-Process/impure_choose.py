@@ -14,7 +14,7 @@ import pandas as pd
 import multiprocessing as mp
 from importlib import reload
 
-import peak_helper as ph
+import purify_helper as ph
 ph = reload(ph)
 
 log = logging.getLogger(__name__)
@@ -39,7 +39,7 @@ def procs_fin (procs) :
 
 	print("Stopped!")
 
-def process_result (raw_doubles_csv, impure_csv, pidsfile, procd_ids) :
+def process_result (impure_csv, raw_doubles_csv, pidsfile, procd_ids) :
 	"""
 	Parses a batch of results -
 	coodcsv			- csv file containing objid, ra, dec
@@ -48,36 +48,28 @@ def process_result (raw_doubles_csv, impure_csv, pidsfile, procd_ids) :
 	procds_ids 		- ids that have already been processed
 	"""
 
-	impure_pd = pd.read_csv(pure_csv, usecols=['objid', 'bands', 'pid1', 'pid2'], dtype=object)
-	raw_pd = pd.read_csv(rescsv, usecols=['objid', 'ra', 'dec', 
-		'u-type', 'u-peaks',
-		'g-type', 'g-peaks',
-		'r-type', 'r-peaks',
-		'i-type', 'i-peaks',
-		'status']
-	, dtype=object)
+	impure_pd = pd.read_csv(impure_csv, dtype=object)
+	raw_pd = pd.read_csv(raw_doubles_csv, dtype=object)
 		
 	procs = []
 	raw_ids = [
-		i for i,objid 
-		in enumerate(list(raw_pd['objid']))
-		if objid not in procd_ids
+		i for i, row
+		in raw_pd.iterrows()
+		if row['objid'] in list(impure_pd['objid'])
+		and row['objid'] not in procd_ids
 	]
+
 		
 	l = len(raw_ids)
 	for j, i in enumerate(raw_ids) :
-		if str(list(pure_pd.loc[i]['bands'])[0]) != '' :
-			continue
-
 		objid = raw_pd.loc[i, 'objid']
-		line = str(raw_pd.loc[i])
+		line = str(raw_pd.loc[i][['objid', 'u-type', 'u-peaks', 'g-type', 'g-peaks', 'r-type', 'r-peaks', 'i-type', 'i-peaks']])
 		print("Object {} of {}".format(j+1, l))
 		print(line[:line.rfind('\n')])
 
 		bands = input("Enter the band : ")
 		if not bands :
-			bands, o1, o2 = '', '', ''
-			log.info("{},{},{},{}".format(objid, bands, o1, o2))
+			log.info("{},,,".format(objid))
 		elif bands == "stop" :
 			procs_fin(procs)
 			exit()
@@ -90,7 +82,7 @@ def process_result (raw_doubles_csv, impure_csv, pidsfile, procd_ids) :
 				log.info("{},{},{},{}".format(objid, bands, o1, o2))
 
 			proc = mp.Process(target=csv_writer, args=(objid,
-											(cood_pd.loc[i, 'ra'], cood_pd.loc[i, 'dec']),
+											(raw_pd.loc[i, 'ra'], raw_pd.loc[i, 'dec']),
 											bands,
 											raw_pd.loc[i, bands[0]+"-type"],
 											raw_pd.loc[i, bands[0]+"-peaks"],
@@ -110,7 +102,7 @@ if __name__ == '__main__':
 	impure_csv = sys.argv[1]
 	raw_doubles_csv = sys.argv[2]
 
-	pidsfile = "Impure_pids.csv" 
+	pidsfile = "impure_pids_temp.csv" 
 	if not os.path.exists(pidsfile) :
 		fileHandler = logging.FileHandler(pidsfile, mode='w')
 		for h in log.handlers :
@@ -123,8 +115,7 @@ if __name__ == '__main__':
 			log.removeHandler(h)
 		log.addHandler(fileHandler)
 
-	procd_ids = get_procd_ids(pidsfile)
-	process_result(raw_doubles_csv,
-				pure_csv,
-				pidsfile,
-				procd_ids)
+	process_result(impure_csv, 
+				raw_doubles_csv, 
+				pidsfile, 
+				get_procd_ids(pidsfile))

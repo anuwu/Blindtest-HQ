@@ -16,7 +16,7 @@ import plane_coods as pc
 scrap = reload(scrap)
 fp = reload(fp)
 
-tolNeighs = pc.tolNeighs
+tolNeighs = lambda pt, t : pc.tolNeighs(pt, t) + [pt]
 
 def parse_type (typestr) :
 	""" Parses the galaxy type and returns the number of peaks """

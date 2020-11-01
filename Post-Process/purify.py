@@ -8,7 +8,7 @@ import numpy as np
 import pandas as pd
 from importlib import reload
 
-import peak_helper as ph
+import purify_helper as ph
 ph = reload(ph)
 
 fits_dir = "FITS"
@@ -28,16 +28,20 @@ def process_result (raw_doubles_csv) :
 	, dtype=object)
 
 	pure_file = open("pure_pids.csv", "w")
-	impure_file = open("impure.csv", "w")
-	pure_file.write("objid,bands,pid1,pid2")
-	impure_file.write("objid,ra,dec")
+	impure_file = open("Impure.csv", "w")
+	pure_file.write("objid,bands,pid1,pid2\n")
+	impure_file.write("objid,ra,dec\n")
 
 	gres = {}
 	for i in range(len(raw_pd['objid'])) :
-		objid = (raw_pd.loc[i, 'objid'],
+		objid, ra, dec = (raw_pd.loc[i, 'objid'],
 						raw_pd.loc[i, 'ra'],
 						raw_pd.loc[i, 'dec']
 						)
+
+		if not os.path.exists("Cutouts/{}.jpeg".format(objid)) :
+			continue
+
 		if raw_pd.loc[i, 'u-type'] == "ERROR" :
 			gres[objid] = {'u-n' : 0, 'u-p' : [],
 			'g-n' : 0, 'g-p' : [],
@@ -45,7 +49,7 @@ def process_result (raw_doubles_csv) :
 			'i-n' : 0, 'i-p' : []
 			}
 			print("{},,,".format(objid))
-			impure_file.write("{},{},{}".format(objid, ra, dec))
+			impure_file.write("{},{},{}\n".format(objid, ra, dec))
 			continue
 
 		gres[objid] = {}
@@ -58,11 +62,12 @@ def process_result (raw_doubles_csv) :
 
 		proc_peaks = []
 		purity = True
-		doub, doub_band = False, None
+		doub, doub_band, obs_bands = False, None, ''
 		for b in "ugri" :
 			if gres[objid][b+"-n"] == 2 :
 				doub = True
 				doub_band = b
+				obs_bands += b
 				if not proc_peaks :
 					proc_peaks = [gres[objid][b+"-p"]]
 				else :
@@ -72,10 +77,13 @@ def process_result (raw_doubles_csv) :
 						p1_2 = pp[1]
 						p2_1, p2_2 = tuple(gres[objid][b+"-p"])
 
-						if not (
-							p1_1 in ph.tolNeighs(p2_1, 3) and p1_2 in ph.tolNeighs(p2_2, 3) or \
-							p1_1 in ph.tolNeighs(p2_2, 3) and p1_2 in ph.tolNeighs(p2_1, 3)
-						) :
+						truths = [
+							x in ph.tolNeighs(y, 3)
+							for x in [p1_1, p1_2]
+							for y in [p2_1, p2_2]
+						]
+
+						if not ((truths[0] and truths[3]) or (truths[1] and truths[2])) :
 							pure_all = False
 							break
 
@@ -85,24 +93,20 @@ def process_result (raw_doubles_csv) :
 						purity = False
 						break
 
-		obs_bands = ''
-		for b in [b for b in "ugri" if gres[objid][b+"-n"] == 2] :
-			obs_bands += b
-
 		if doub and purity :
 			o1, o2 = ph.double_peak_ids(objid,
-									(raw_pd.loc[i, 'ra'], raw_pd.loc[i, 'dec']),
+									(ra, dec),
 									doub_band,
 									gres[objid][doub_band + "-p"])
-			pure_file.write("{},{},{},{}".format(objid, obs_bands, o1, o2))
+			pure_file.write("{},{},{},{}\n".format(objid, obs_bands, o1, o2))
 		else :
 			o1, o2 = '', ''
-			impure_file.write("{},{},{}".format(objid, ra, dec))
+			impure_file.write("{},{},{}\n".format(objid, ra, dec))
 
 		print("{},{},{},{}".format(objid, obs_bands, o1, o2))
 
-	pure_file.cpose()
-	impure_file.ciose()
+	pure_file.close()
+	impure_file.close()
 
 
 if __name__ == '__main__':
@@ -111,3 +115,5 @@ if __name__ == '__main__':
 
 	print("objid,bands,pid1,pid2")
 	process_result(sys.argv[1])
+
+	os.system("rm -rf FITS/")

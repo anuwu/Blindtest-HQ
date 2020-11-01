@@ -1,16 +1,10 @@
 # Temporary workspace files/folders for post-processing
-__pycache__/
-Cutouts/
-FITS/
-Pure.csv
-Impure.csv
-raw_doubles.csv
-*.log
-.ipynb_checkpoints
+Post-Process/*
+!Post-Process/*.py
+!Post-Process/*.sh
 
 # SDSS Stripe-82
 SDSS-Stripe82/SDSS_Stripe82_All.csv
-SDSS-Stripe82/Doubles/Data/Mou/Cutouts
 
 # Gaia Stripe-82
 Gaia-Stripe82/Gaia_Stripe82_All.csv
