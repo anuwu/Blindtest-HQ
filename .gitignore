@@ -12,3 +12,4 @@ Gaia-Stripe82/Gaia_Stripe82_All.csv
 # Gaia-SDSS crossmatch filtration output
 SDSSxGaia/*
 !SDSSxGaia/SDSSxGaia_match_counts.png
+!SDSSxGaia/StatBatches/
