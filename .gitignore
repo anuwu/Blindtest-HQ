@@ -1,3 +1,6 @@
+# For stats notebooks
+.ipynb_checkpoints/
+
 # Temporary workspace files/folders for post-processing
 Post-Process/*
 !Post-Process/*.py
