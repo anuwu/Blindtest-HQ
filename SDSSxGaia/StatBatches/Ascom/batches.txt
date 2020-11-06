@@ -1,7 +1,19 @@
-Lesson, don't read and output re-direct to the same file. You will lose your data.
-Since the data I lost wasn't too big, I'm atleast able to reconstruct it.
-
-Here are the batches that were done for the Ascom paper -
-sxgc_gt-100/*
-sxgc_90-b-100/1-9
-sxgc_80-b-90/1-4
+sxgc_gt-100/sxgc_gt-100_10_3/
+sxgc_gt-100/sxgc_gt-100_10_4/
+sxgc_gt-100/sxgc_gt-100_1-4/
+sxgc_gt-100/sxgc_gt-100_10_1/
+sxgc_gt-100/sxgc_gt-100_10_2/
+sxgc_gt-100/sxgc_gt-100_10_5/
+sxgc_gt-100/sxgc_gt-100_7-8/
+sxgc_gt-100/sxgc_gt-100_9/
+sxgc_gt-100/sxgc_gt-100_5-6/
+sxgc_90-b-100/sxgc_90-b-100_1-9_4/
+sxgc_90-b-100/sxgc_90-b-100_1-9_2/
+sxgc_90-b-100/sxgc_90-b-100_1-9_3/
+sxgc_90-b-100/sxgc_90-b-100_1-9_1/
+sxgc_90-b-100/sxgc_90-b-100_1-9_5/
+sxgc_80-b-90/sxgc_80-b-90_1-4_1/
+sxgc_80-b-90/sxgc_80-b-90_1-4_2/
+sxgc_80-b-90/sxgc_80-b-90_1-4_3/
+sxgc_80-b-90/sxgc_80-b-90_1-4_4/
+sxgc_80-b-90/sxgc_80-b-90_1-4_5/
