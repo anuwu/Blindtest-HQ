@@ -76,6 +76,7 @@ def main (flist) :
 		raw = pd.read_csv('raw_doubles.csv', dtype=object)
 		
 	for res_file in flist :
+		print ("\n{}\n".format(res_file))
 		resind = res_file.find("_result.csv")
 		dirind = res_file.rfind("/")
 		batch_name = res_file[dirind+1:resind]
