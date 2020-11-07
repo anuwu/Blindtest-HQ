@@ -1,3 +1,9 @@
+"""
+Reads in the 'raw_doubles.csv' input
+and redownloads the galaxies whose
+status has been marked as 'fail'
+"""
+
 import os
 import pandas as pd
 from res import download_cutout
