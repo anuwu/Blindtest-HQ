@@ -2,9 +2,9 @@
 .ipynb_checkpoints/
 
 # Temporary workspace files/folders for post-processing
-Post-Process/*
-!Post-Process/*.py
-!Post-Process/*.sh
+Scripts/*
+!Scripts/*.py
+!Scripts/*.sh
 
 # SDSS Stripe-82
 SDSS-Stripe82/SDSS_Stripe82_All.csv
