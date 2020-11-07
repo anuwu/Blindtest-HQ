@@ -1,0 +1,5 @@
+sxgc_gt-100/sxgc_gt-100_10_3//sxgc_gt-100_10_3_result.csv
+sxgc_gt-100/sxgc_gt-100_10_4//sxgc_gt-100_10_4_result.csv
+sxgc_gt-100/sxgc_gt-100_10_1//sxgc_gt-100_10_1_result.csv
+sxgc_gt-100/sxgc_gt-100_10_2//sxgc_gt-100_10_2_result.csv
+sxgc_gt-100/sxgc_gt-100_10_5//sxgc_gt-100_10_5_result.csv
