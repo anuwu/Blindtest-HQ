@@ -1,7 +1,12 @@
 #!/bin/bash
 # For the list of Batch directories in a batch list, outputs the total size of all the batches 
 
-lstat=$(cat ../StatBatches/$1/batches.txt | xargs find | grep -v "_result.csv$" | grep ".csv" | xargs wc -l)
+len=$(printf "$0" | wc -m)
+shlen="18"
+kut="$[$len-$shlen]"
+base=$(printf "$0" | cut -c1-$kut)
+
+lstat=$(cat $base../StatBatches/$1/batches.txt | xargs find | grep -v "_result.csv$" | grep ".csv" | xargs wc -l)
 tot=$(printf "$lstat\n" | tail -1 | grep -o "[0-9]*")
 sub=$(printf "$lstat\n" | wc -l)
 sub=$[$sub-1]
