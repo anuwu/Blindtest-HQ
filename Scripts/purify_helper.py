@@ -7,7 +7,7 @@ from importlib import reload
 from astropy.wcs.utils import pixel_to_skycoord
 
 sys.path.append(os.path.abspath(
-	os.path.join(os.getcwd(), "../DAGN-Blindtest")
+	os.path.join(os.getcwd(), "../../DAGN-Blindtest")
 ))
 
 import sdss_scrape as scrap
@@ -51,7 +51,7 @@ def cood_to_objid (cood) :
 			.format(cood.ra.deg, cood.dec.deg)
 	soup = bs4.BeautifulSoup(requests.get(link).text, features='lxml')
 	if len(soup.select(".nodatafound")) == 1 :
-		return '', ''
+		return None
 
 	st = str(soup.findAll("td", {"class": "t"})[6])
 	return st[st[:-1].rfind('>')+1 : st.rfind('<')]

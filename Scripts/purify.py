@@ -33,16 +33,12 @@ def process_result (raw_doubles_csv) :
 	impure_file.write("objid,ra,dec\n")
 
 	gres = {}
-	for i in range(len(raw_pd['objid'])) :
-		objid, ra, dec = (raw_pd.loc[i, 'objid'],
-						raw_pd.loc[i, 'ra'],
-						raw_pd.loc[i, 'dec']
-						)
-
+	for i, row in raw_pd.iterrows() :
+		objid, ra, dec = tuple(row[['objid', 'ra', 'dec']])
 		if not os.path.exists("Cutouts/{}.jpeg".format(objid)) :
 			continue
 
-		if raw_pd.loc[i, 'u-type'] == "ERROR" :
+		if row['u-type'] == "ERROR" :
 			gres[objid] = {'u-n' : 0, 'u-p' : [],
 			'g-n' : 0, 'g-p' : [],
 			'r-n' : 0, 'r-p' : [],
@@ -56,9 +52,8 @@ def process_result (raw_doubles_csv) :
 		for b in "ugri" :
 			b_type = b + "-type"
 			b_peaks = b + "-peaks"
-			tp = raw_pd.loc[i, b_type]
-			gres[objid][b+"-n"] = ph.parse_type(raw_pd.loc[i, b_type])
-			gres[objid][b+"-p"] = ph.parse_peaks(raw_pd.loc[i, b_peaks], gres[objid][b+"-n"])
+			gres[objid][b+"-n"] = ph.parse_type(row[b_type])
+			gres[objid][b+"-p"] = ph.parse_peaks(row[b_peaks], gres[objid][b+"-n"])
 
 		proc_peaks = []
 		purity = True
@@ -93,15 +88,14 @@ def process_result (raw_doubles_csv) :
 						purity = False
 						break
 
-		if doub and purity :
-			o1, o2 = ph.double_peak_ids(objid,
-									(ra, dec),
-									doub_band,
-									gres[objid][doub_band + "-p"])
-			pure_file.write("{},{},{},{}\n".format(objid, obs_bands, o1, o2))
-		else :
-			o1, o2 = '', ''
+		o1, o2 = ph.double_peak_ids(objid, (ra, dec), doub_band, gres[objid][doub_band + '-p']) \
+				if doub and purity \
+				else (None, None)
+
+		if None in [o1, o2] :
 			impure_file.write("{},{},{}\n".format(objid, ra, dec))
+		else :
+			pure_file.write("{},{},{},{}\n".format(objid, obs_bands, o1, o2))
 
 		print("{},{},{},{}".format(objid, obs_bands, o1, o2))
 

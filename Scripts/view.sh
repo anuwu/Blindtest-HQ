@@ -4,12 +4,12 @@
 
 path="$1/*"
 
-if ! [[ test -e Keep/ ]]
+if [ ! -d Keep/ ] 
 then
         mkdir Keep/
 fi
 
-if ! [[ test -e Del/ ]]
+if [ ! -d Del/ ] 
 then
         mkdir Del/
 fi
