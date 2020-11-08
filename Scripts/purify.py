@@ -27,15 +27,32 @@ def process_result (raw_doubles_csv) :
 		'status']
 	, dtype=object)
 
-	pure_file = open("pure_pids.csv", "w")
-	impure_file = open("Impure.csv", "w")
-	pure_file.write("objid,bands,pid1,pid2\n")
-	impure_file.write("objid,ra,dec\n")
+	pure_csv, impure_csv = 'pure_pids.csv', 'Impure.csv'
+	pure_df, impure_df = None, None
+	if not os.path.exists(pure_csv) :
+		pure_file = open(pure_csv, 'w')
+		pure_file.write('objid,bands,pid1,pid2\n')
+	else :
+		pure_file = open(pure_csv, 'a')
+		pure_df = pd.read_csv(pure_csv, dtype=object)
 
+	if not os.path.exists(impure_csv) :
+		impure_file = open(impure_csv, 'w')
+		impure_file.write("objid,ra,dec\n")
+	else :
+		impure_file = open(impure_csv, 'a')
+		impure_df = pd.read_csv(impure_csv, dtype=object)
+	
 	gres = {}
 	for i, row in raw_pd.iterrows() :
 		objid, ra, dec = tuple(row[['objid', 'ra', 'dec']])
+
 		if not os.path.exists("Cutouts/{}.jpeg".format(objid)) :
+			continue
+
+		if pure_df is not None and ((pure_df['objid'] == objid).any() \
+		or impure_df is not None and (impure_df['objid'] == objid).any()) :
+			print ("{} --> Done".format(objid))
 			continue
 
 		if row['u-type'] == "ERROR" :

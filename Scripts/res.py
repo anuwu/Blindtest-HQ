@@ -36,8 +36,7 @@ def batchRes (incsv, outcsv, writer) :
 
 	for i, objid in double_ids.iteritems() :
 		if raw is not None :
-			raw_row = raw['objid'] == objid
-			if raw_row.any() :
+			if (raw['objid'] == objid).any() :
 				continue 
 
 		row = gal.loc[gal['objid'] == objid]
