@@ -1,1 +1,0 @@
-select top 1000 objID INTO MyDB.blind3 FROM photoObjAll where ra >= -60 AND ra <= 60 AND dec >= -1.26 AND dec <= 1.26 AND type = 3 AND objID NOT IN (select * FROM MyDB.blind) order by newid()
