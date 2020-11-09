@@ -6,15 +6,11 @@ Scripts/*
 !Scripts/*.py
 !Scripts/*.sh
 
-# SDSS Stripe-82
-SDSS-Stripe82/SDSS_Stripe82_All.csv
+# SDSS Stripe-82 catalog csv
+SDSS-Stripe82/sdss_stripe82_all.csv
 
-# Gaia Stripe-82
-Gaia-Stripe82/Gaia_Stripe82_All.csv
+# Gaia Stripe-82 catalog csv
+Gaia-Stripe82/gaia_stripe82_all.csv
 
-# Gaia-SDSS crossmatch filtration output
-# SDSSxGaia/*/*
-# !SDSSxGaia/SDSSxGaia_match_counts.png
-# !SDSSxGaia/StatBatches/
-# SDSSxGaia/Batches/*
-# !SDSSxGaia/Batches/statbatch_count.sh
+# SDSS Spectro catalog csv
+SDSS-Spectro/sdss_spectro_all.csv
