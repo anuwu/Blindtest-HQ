@@ -42,7 +42,7 @@ def process_result (raw_doubles_csv) :
 	else :
 		impure_file = open(impure_csv, 'a')
 		impure_df = pd.read_csv(impure_csv, dtype=object)
-	
+
 	gres = {}
 	for i, row in raw_pd.iterrows() :
 		objid, ra, dec = tuple(row[['objid', 'ra', 'dec']])

@@ -39,7 +39,7 @@ def parse_peaks (peakstr, nums) :
 		(int(peakstr[o+1:cm]), int(peakstr[cm+2:c]))
 		for o, cm, c in zip(open_inds, comma_inds, close_inds)
 	]
-	
+
 	return plist
 
 
@@ -85,13 +85,13 @@ def double_peak_ids (objid, cood, band, plist) :
 	if not os.path.exists(fits_path) :
 		repoLink = scrap.scrapeRepoLink(objid)
 		dlinks = scrap.scrapeBandLinks(repoLink)
-		scrap.downloadExtract(objid, 
-							band, 
-							dlinks[band], 
-							fits_fold, 
+		scrap.downloadExtract(objid,
+							band,
+							dlinks[band],
+							fits_fold,
 							fits_path)
 
-	return peak_to_objid(objid, 
+	return peak_to_objid(objid,
 						cood,
-						fits_path, 
+						fits_path,
 						plist)
