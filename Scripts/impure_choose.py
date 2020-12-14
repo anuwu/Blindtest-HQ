@@ -4,6 +4,8 @@ but I haven't tested it
 
 Have written functions to check objids that have already been processed
 because multiprocessing is unreliable and some don't finish at all!
+
+> python3 impure_choose.py Impure.csv raw_doubles.csv
 """
 
 import sys
