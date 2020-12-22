@@ -24,7 +24,12 @@ def batchRes (incsv, outcsv, writer) :
 	of the galaxies classified as le in any band """
 
 	gal = pd.read_csv(incsv, dtype=object)
-	res = pd.read_csv(outcsv, dtype=object)
+	try :
+		res = pd.read_csv(outcsv, dtype=object)
+	except :
+		print(outcsv)
+		return
+
 
 	double_ids = res['objid'][
 		(res['u-type'] == "DOUBLE") |
@@ -43,7 +48,7 @@ def batchRes (incsv, outcsv, writer) :
 		ra = str(list(row['ra'])[0])
 		dec = str(list(row['dec'])[0])
 		try :
-			download_cutout(ra, dec, os.path.join(cutout_dir, "{}.jpeg".format(str(objid))))
+			# download_cutout(ra, dec, os.path.join(cutout_dir, "{}.jpeg".format(str(objid))))
 			stat = "success"
 		except :
 			stat = "fail"
@@ -54,7 +59,7 @@ def batchRes (incsv, outcsv, writer) :
 				for col in ["type", "peaks"]
 			]) + (stat, )
 
-		print("{},{},{},{},\"{}\",{},\"{}\",{},\"{}\",{},\"{}\",{}".format(*args))
+		# print("{},{},{},{},\"{}\",{},\"{}\",{},\"{}\",{},\"{}\",{}".format(*args))
 		writer.write("{},{},{},{},\"{}\",{},\"{}\",{},\"{}\",{},\"{}\",{}\n".format(*args))
 
 
@@ -69,7 +74,7 @@ def main (flist) :
 	if not os.path.exists('raw_doubles.csv') :
 		writer = open('raw_doubles.csv', 'w')
 		writer.write("objid,ra,dec,u-type,u-peaks,g-type,g-peaks,r-type,r-peaks,i-type,i-peaks,status\n")
-		print("objid,ra,dec,u-type,u-peaks,g-type,g-peaks,r-type,r-peaks,i-type,i-peaks,status")
+		# print("objid,ra,dec,u-type,u-peaks,g-type,g-peaks,r-type,r-peaks,i-type,i-peaks,status")
 	else :
 		writer = open('raw_doubles.csv', 'a')
 		raw = pd.read_csv('raw_doubles.csv', dtype=object)
@@ -86,3 +91,4 @@ def main (flist) :
 
 if __name__ == '__main__':
 	main(sys.argv[1:])
+	# print(sys.argv[1:])
