@@ -641,12 +641,6 @@ objid,u-type,u-peaks,g-type,g-peaks,r-type,r-peaks,i-type,i-peaks
 1237661418749165796,NO_PEAK,"[]",SINGLE,"[(50, 50)]",SINGLE,"[(50, 50)]",SINGLE,"[(50, 50)]"
 1237661388141297775,NO_PEAK,"[]",SINGLE,"[(52, 34)]",SINGLE,"[(53, 33)]",SINGLE,"[(52, 34)]"
 1237661418212294666,SINGLE,"[(50, 50)]",SINGLE,"[(39, 26)]",SINGLE,"[(39, 26)]",DOUBLE,"[(39, 26)(33, 35)]"
-/content/drive/My Drive/DAGN/light_profile.py:228: RuntimeWarning: invalid value encountered in power
-  fmax = 4*np.power(np.max(self.grays)/k, n)
-/content/drive/My Drive/DAGN/light_profile.py:239: RuntimeWarning: invalid value encountered in less
-  ind = np.argmax(np.where(intProf - level < 0,
-/content/drive/My Drive/DAGN/light_profile.py:104: RuntimeWarning: invalid value encountered in less
-  noiseCoods = np.argwhere(smooth < self.noise)
 1237661388678103290,ERROR,ERROR,ERROR,ERROR,ERROR,ERROR,ERROR,ERROR
 1237661418212294707,NO_PEAK,"[]",SINGLE,"[(50, 50)]",SINGLE,"[(50, 50)]",SINGLE,"[(50, 50)]"
 1237661418212294709,NO_PEAK,"[]",SINGLE,"[(50, 50)]",SINGLE,"[(50, 50)]",NO_PEAK,"[]"
