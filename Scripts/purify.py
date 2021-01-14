@@ -23,8 +23,8 @@ def process_result (raw_doubles_csv) :
 		'u-type', 'u-peaks',
 		'g-type', 'g-peaks',
 		'r-type', 'r-peaks',
-		'i-type', 'i-peaks',
-		'status']
+		'i-type', 'i-peaks'
+		]
 	, dtype=object)
 
 	pure_csv, impure_csv = 'pure_pids.csv', 'Impure.csv'
@@ -47,8 +47,8 @@ def process_result (raw_doubles_csv) :
 	for i, row in raw_pd.iterrows() :
 		objid, ra, dec = tuple(row[['objid', 'ra', 'dec']])
 
-		if not os.path.exists("Cutouts/{}.jpeg".format(objid)) :
-			continue
+		# if not os.path.exists("Cutouts/{}.jpeg".format(objid)) :
+			# continue
 
 		if pure_df is not None and ((pure_df['objid'] == objid).any() \
 		or impure_df is not None and (impure_df['objid'] == objid).any()) :

@@ -3,20 +3,48 @@ import os
 import re
 import requests
 import bs4
+import warnings
 from importlib import reload
+
+from astropy.io import fits
+from astropy.nddata import Cutout2D
+from astropy.wcs import WCS
+from astropy.coordinates import SkyCoord, Angle
+from astropy import units as u
+from astropy.utils.exceptions import AstropyWarning
 from astropy.wcs.utils import pixel_to_skycoord
 
-sys.path.append(os.path.abspath(
-	os.path.join(os.getcwd(), "../../DAGN-Blindtest")
-))
+#sys.path.append(os.path.abspath(
+#	os.path.join(os.getcwd(), "../../DAGN-Blindtest")
+#))
+
+warnings.simplefilter('ignore', category=AstropyWarning)
 
 import sdss_scrape as scrap
-import fits_proc as fp
 import plane_coods as pc
 scrap = reload(scrap)
-fp = reload(fp)
 
 tolNeighs = lambda pt, t : pc.tolNeighs(pt, t) + [pt]
+
+def cutout (fitsPath, cood, rad) :
+    """
+    Performs cutout of FITS file -
+        fitsPath            - Directory where FITS file is present
+        cood                - (ra, dec) of the object
+        rad                 - Radius (in arcseconds) of the cutout
+    """
+
+    try :
+        hdu = fits.open(fitsPath, memmap=False)[0]
+    except Exception as e :
+        return None
+
+    wcs = WCS(hdu.header)
+    position = SkyCoord(ra=Angle(cood[0], unit=u.deg),
+                    dec=Angle(cood[1], unit=u.deg))
+    size = u.Quantity((rad, rad), u.arcsec)
+
+    return Cutout2D(hdu.data, position, size, wcs=wcs)
 
 def parse_type (typestr) :
 	""" Parses the galaxy type and returns the number of peaks """
@@ -62,9 +90,10 @@ def peak_to_objid (objid, cood, fitsPath, plist) :
 	and returns the SDSS objids (if they exist) corresponding
 	to the pixel coordinates of the peaks in 'plist' """
 
-	cutout = fp.cutout(fitsPath, cood, 40)
-	cood1 = pixel_to_skycoord(plist[0][0], plist[0][1], cutout.wcs)
-	cood2 = pixel_to_skycoord(plist[1][0], plist[1][1], cutout.wcs)
+	# cutout = fp.cutout(fitsPath, cood, 40)
+	ct = cutout(fitsPath, cood, 40)
+	cood1 = pixel_to_skycoord(plist[0][0], plist[0][1], ct.wcs)
+	cood2 = pixel_to_skycoord(plist[1][0], plist[1][1], ct.wcs)
 
 	os.remove(fitsPath)
 	return cood_to_objid(cood1), cood_to_objid(cood2)

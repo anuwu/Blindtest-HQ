@@ -60,7 +60,8 @@ def batchRes (incsv, outcsv, writer) :
 			]) + (stat, )
 
 		# print("{},{},{},{},\"{}\",{},\"{}\",{},\"{}\",{},\"{}\",{}".format(*args))
-		writer.write("{},{},{},{},\"{}\",{},\"{}\",{},\"{}\",{},\"{}\",{}\n".format(*args))
+		# writer.write("{},{},{},{},\"{}\",{},\"{}\",{},\"{}\",{},\"{}\",{}\n".format(*args))
+		writer.write("{},{},{},{},\"{}\",{},\"{}\",{},\"{}\",{},\"{}\"\n".format(*args))
 
 
 def main (flist) :
@@ -73,7 +74,8 @@ def main (flist) :
 
 	if not os.path.exists('raw_doubles.csv') :
 		writer = open('raw_doubles.csv', 'w')
-		writer.write("objid,ra,dec,u-type,u-peaks,g-type,g-peaks,r-type,r-peaks,i-type,i-peaks,status\n")
+		# writer.write("objid,ra,dec,u-type,u-peaks,g-type,g-peaks,r-type,r-peaks,i-type,i-peaks,status\n")
+		writer.write("objid,ra,dec,u-type,u-peaks,g-type,g-peaks,r-type,r-peaks,i-type,i-peaks\n")
 		# print("objid,ra,dec,u-type,u-peaks,g-type,g-peaks,r-type,r-peaks,i-type,i-peaks,status")
 	else :
 		writer = open('raw_doubles.csv', 'a')
